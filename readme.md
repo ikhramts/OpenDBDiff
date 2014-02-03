@@ -1,7 +1,7 @@
 Open DbDiff
 ===========
 
-This is my branch of [Open DbDiff]() project hosted on CodePlex.
+This is my branch of [Open DBDiff](https://opendbiff.codeplex.com/) project hosted on CodePlex.
 
 
 Changes so far
