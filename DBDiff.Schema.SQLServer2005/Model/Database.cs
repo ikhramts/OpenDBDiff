@@ -218,13 +218,6 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
     Open DBDiff {0}
     http://opendbiff.codeplex.com/
-
-    Script created by {1}\{2} on {3} at {4}.
-
-    Created on:  {5}
-    Source:      {6} on {7}
-    Destination: {8} on {9}
-
 */
 
 ",
