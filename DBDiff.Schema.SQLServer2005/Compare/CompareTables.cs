@@ -21,7 +21,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
                 if (!Table.CompareFileGroup(tablaOriginal, node))
                 {
                     tablaOriginal.FileGroup = node.FileGroup;
-                    /*Esto solo aplica a las tablas heap, el resto hace el campo en el filegroup del indice clustered*/
+                    /* This only applies to heap tables, the rest does the field in the clustered index filegroup */
                     if (!tablaOriginal.HasClusteredIndex)
                         tablaOriginal.Status = Enums.ObjectStatusType.RebuildStatus;
                 }
