@@ -49,31 +49,57 @@
         static bool Work(Argument arguments)
         {
             bool completedSuccessfully = false;
+
+            // Attempt to read the config file.
+            Config config = null;
+
+            if (arguments.ConfigFile != null)
+            {
+                System.Console.WriteLine("Reading config file...");
+                config = Config.LoadYaml(arguments.ConfigFile);
+
+                if (String.IsNullOrEmpty(arguments.ConnectionString1))
+                {
+                    arguments.ConnectionString1 = config.connection_string_from;
+                }
+
+                if (String.IsNullOrEmpty(arguments.ConnectionString2))
+                {
+                    arguments.ConnectionString2 = config.connection_string_to;
+                }
+
+                if (String.IsNullOrEmpty(arguments.OutputFile))
+                {
+                    arguments.OutputFile = config.output_file;
+                }
+            }
+
             try
             {
-                DBDiff.Schema.SQLServer.Generates.Model.Database origen;
-                DBDiff.Schema.SQLServer.Generates.Model.Database destino;
+                DBDiff.Schema.SQLServer.Generates.Model.Database origin;
+                DBDiff.Schema.SQLServer.Generates.Model.Database destination;
+
                 if (TestConnection(arguments.ConnectionString1, arguments.ConnectionString2))
                 {
                     Generate sql = new Generate();
                     sql.ConnectionString = arguments.ConnectionString1;
                     System.Console.WriteLine("Reading first database...");
                     sql.Options = SqlFilter;
-                    origen = sql.Process();                    
+                    origin = sql.Process();
 
                     sql.ConnectionString = arguments.ConnectionString2;
                     System.Console.WriteLine("Reading second database...");
-                    destino = sql.Process();
+                    destination = sql.Process();
                     System.Console.WriteLine("Comparing databases schemas...");
-                    origen = Generate.Compare(origen, destino);
+                    origin = Generate.Compare(origin, destination);
                     if (!arguments.OutputAll)
                     {
                         // temporary work-around: run twice just like GUI
-                        origen.ToSqlDiff();
+                        origin.ToSqlDiff();
                     }
 
                     System.Console.WriteLine("Generating SQL file...");
-                    SaveFile(arguments.OutputFile, arguments.OutputAll ? origen.ToSql() : origen.ToSqlDiff().ToSQL());
+                    SaveFile(arguments.OutputFile, arguments.OutputAll ? origin.ToSql() : origin.ToSqlDiff().ToSQL());
                     completedSuccessfully = true;
                 }
             }

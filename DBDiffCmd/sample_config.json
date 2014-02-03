@@ -1,0 +1,39 @@
+{
+    /* General settings */
+    "connection_string_from": "<insert connection string>",
+    "connection_string_to": "<insert connection string>",
+    "output_file": "Diff.sql",
+
+    /* Diff generation settings.*/
+    "generate_diffs": {
+        /* Tables diff configuration. */
+        "tables": true,
+        "columns": true,
+        "constraints": true,
+        "indexes": true,
+        "table_options": true,
+        "clr_triggers": true,
+        "full_text_indexes": true,
+
+        /* All other diff configurations. */
+        "assemblies": true,
+        "user_data_types": true,
+        "xml_schemas": true,
+        "schemas": true,
+        "file_groups": true,
+        "rules": true,
+        "ddl_triggers": true,
+        "synonyms": true,
+        "users": true,
+        "stored_procedures": true,
+        "clr_stored_procedures": true,
+        "clr_functions": true,
+        "views": true,
+        "functions": true,
+        "roles": true,
+        "partition_functions": true,
+        "partition_schemes": true,
+        "table_types": true,
+        "full_text": true
+    }
+}
