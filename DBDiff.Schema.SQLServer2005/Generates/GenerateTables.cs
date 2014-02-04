@@ -159,6 +159,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                 if (database.Options.Ignore.FilterNotForReplication)
                     col.IsIdentityForReplication = ((int)reader[colIsIdentityReplIndex] == 1);
             }
+
             col.Name = (string)reader[colNameIndex];
             col.Owner = table.Owner;
             col.ComputedFormula = (string)reader[colFormulaIndex];
@@ -176,15 +177,18 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
             col.HasIndexDependencies = ((int)reader[colHasIndexIndex] == 1);
             col.HasComputedDependencies = ((int)reader[colHasComputedFormulaIndex] == 1);
             col.IsRowGuid = (bool)reader[colIsRowGuidIndex];
+
             if (col.IsUserDefinedType)
                 col.Type = "[" + (string)reader[colOwnerType] + "].[" + (string)reader[colTypeIndex] + "]";
             else
                 col.Type = (string)reader[colTypeIndex];
+
             if (((Database)table.Parent).Info.Version == DatabaseInfo.VersionTypeEnum.SQLServer2008)
             {
                 col.IsSparse = (bool)reader[colis_sparseIndex];
                 col.IsFileStream = (bool)reader[colIs_FileStream];
             }
+
             if ((int)reader[colDefaultIdIndex] != 0)
             {
                 col.DefaultConstraint = new ColumnConstraint(col)
@@ -196,8 +200,10 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                                                 Definition = (string) reader[colDefaultDefinitionIndex]
                                             };
             }
+
             if ((int)reader[colrule_object_idIndex] != 0)
                 col.Rule = ((Database)table.Parent).Rules.Find((int)reader[colrule_object_idIndex]);
+
             table.Columns.Add(col);
         }
 
@@ -244,6 +250,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                             {
                                 lastObjectId = (int)reader[TableIdIndex];
                                 isTable = reader["ObjectType"].ToString().Trim().Equals("U");
+
                                 if (isTable)
                                 {
                                     item = new Table(database);
@@ -254,6 +261,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                                     textInRow = (int)reader[Text_In_Row_limitIndex];
                                     largeValues = (Boolean)reader[large_value_types_out_of_rowIndex];
                                     varDecimal = ((int)reader[HasVarDecimalIndex]) == 1;
+
                                     if (database.Options.Ignore.FilterTableFileGroup)
                                     {
                                         ((Table)item).FileGroup = (string)reader[FileGroupIndex];
@@ -268,16 +276,24 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                                             }
                                         }
                                     }
+
                                     if (database.Options.Ignore.FilterTableOption)
                                     {
                                         if (textInRow > 0) ((Table)item).Options.Add(new TableOption("TextInRow", textInRow.ToString(CultureInfo.InvariantCulture), item));
                                         if (largeValues) ((Table)item).Options.Add(new TableOption("LargeValues", "1", item));
                                         if (varDecimal) ((Table)item).Options.Add(new TableOption("VarDecimal", "1", item));
                                     }
-                                    if ((database.Options.Ignore.FilterTableLockEscalation) && (database.Info.Version == DatabaseInfo.VersionTypeEnum.SQLServer2008))
+
+                                    if ((database.Options.Ignore.FilterTableLockEscalation)
+                                        && (database.Info.Version == DatabaseInfo.VersionTypeEnum.SQLServer2008))
+                                    {
                                         ((Table)item).Options.Add(new TableOption("LockEscalation", (string)reader[TableLockEscalation], item));
+                                    }
                                     else
+                                    {
                                         ((Table)item).Options.Add(new TableOption("LockEscalation", "TABLE", item));
+                                    }
+
                                     database.Tables.Add((Table)item);
                                 }
                                 else
@@ -291,6 +307,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                                     database.TablesTypes.Add((TableType)item);
                                 }
                             }
+
                             if (isTable)
                             {
                                 if (database.Options.Ignore.FilterTable)
@@ -305,9 +322,6 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                     }
                 }
             }
-            //tables.ToSQL();
         }
-
-
     }
 }

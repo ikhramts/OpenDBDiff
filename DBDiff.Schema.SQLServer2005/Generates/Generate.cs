@@ -79,21 +79,16 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
         }
 
         /// <summary>
-        /// Genera el schema de la base de datos seleccionada y devuelve un objeto Database.
+        /// Generates the schema of the selected database and returns a Database object.
         /// </summary>
         public Database Process()
         {
             string error = "";
             var databaseSchema = new Database();
 
-            //tables.OnTableProgress += new Progress.ProgressHandler(tables_OnTableProgress);
             databaseSchema.Options = options;
             databaseSchema.Name = Name;
             databaseSchema.Info = (new GenerateDatabase(connectionString, options)).Get(databaseSchema);
-            /*Thread t1 = new Thread(delegate()
-                {
-                    try
-                    {*/
             (new GenerateRules(this)).Fill(databaseSchema, connectionString);
             (new GenerateTables(this)).Fill(databaseSchema, connectionString, messages);
             (new GenerateViews(this)).Fill(databaseSchema, connectionString, messages);
@@ -102,18 +97,8 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
             (new GenerateUserDataTypes(this)).Fill(databaseSchema, connectionString, messages);
             (new GenerateXMLSchemas(this)).Fill(databaseSchema, connectionString);
             (new GenerateSchemas(this)).Fill(databaseSchema, connectionString);
-            /*}
-                    catch (Exception ex)
-                    {
-                        error = ex.StackTrace;
-                    }
-                });
-                Thread t2 = new Thread(delegate()
-                {
-                    try
-                    {*/
 
-            //not supported in azure yet
+            // Not supported in azure yet
             if (databaseSchema.Info.Version != DatabaseInfo.VersionTypeEnum.SQLServerAzure10)
             {
                 (new GeneratePartitionFunctions(this)).Fill(databaseSchema, connectionString);
@@ -124,42 +109,22 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
             (new GenerateDDLTriggers(this)).Fill(databaseSchema, connectionString);
             (new GenerateSynonyms(this)).Fill(databaseSchema, connectionString);
             
-            //not supported in azure yet
+            // Not supported in azure yet
             if (databaseSchema.Info.Version != DatabaseInfo.VersionTypeEnum.SQLServerAzure10)
             {
                 (new GenerateAssemblies(this)).Fill(databaseSchema, connectionString);
                 (new GenerateFullText(this)).Fill(databaseSchema, connectionString);
             }
-            /*}
-                    catch (Exception ex)
-                    {
-                        error = ex.StackTrace;
-                    }
-                });
-                Thread t3 = new Thread(delegate()
-                {
-                    try
-                    {*/
+
             (new GenerateStoreProcedures(this)).Fill(databaseSchema, connectionString);
             (new GenerateFunctions(this)).Fill(databaseSchema, connectionString);
             (new GenerateTriggers(this)).Fill(databaseSchema, connectionString, messages);
             (new GenerateTextObjects(this)).Fill(databaseSchema, connectionString);
             (new GenerateUsers(this)).Fill(databaseSchema, connectionString);
-            /*}
-                    catch (Exception ex)
-                    {
-                        error = ex.StackTrace;
-                    }
-                });
-                t1.Start();
-                t2.Start();
-                t3.Start();
-                t1.Join();
-                t2.Join();
-                t3.Join();*/
+
             if (String.IsNullOrEmpty(error))
             {
-                /*Las propiedades extendidas deben ir despues de haber capturado el resto de los objetos de la base*/
+                // Extended properties must be after having captured the rest of the database objects.
                 (new GenerateExtendedProperties(this)).Fill(databaseSchema, connectionString, messages);
                 databaseSchema.BuildDependency();
                 return databaseSchema;

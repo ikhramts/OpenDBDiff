@@ -63,7 +63,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         public SchemaList<TableOption, Table> Options { get; set; }     
 
         /// <summary>
-        /// Indica si la tabla tiene alguna columna que sea Identity.
+        /// Indicates if the table has a column that is Identity.
         /// </summary>
         public Boolean HasIdentityColumn
         {
@@ -106,8 +106,8 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         }
 
         /// <summary>
-        /// Indica la cantidad de Constraints dependientes de otra tabla (FK) que tiene
-        /// la tabla.
+        /// Indicates the number of dependents Constraints in another table (FK) having
+        /// Table.
         /// </summary>
         public override int DependenciesCount
         {
@@ -123,9 +123,9 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         #region IComparable<Table> Members
 
         /// <summary>
-        /// Compara en primer orden por la operacion 
-        /// (Primero van los Drops, luego los Create y finalesmente los Alter).
-        /// Si la operacion es la misma, ordena por cantidad de tablas dependientes.
+        /// Compare first order Operation
+        /// (First go Drops, then the Create and Alter finalesmente).
+        /// If the operation is the same, sort by number of dependent tables.
         /// </summary>
         public int CompareTo(Table other)
         {
@@ -140,7 +140,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         #region ITable<Table> Members
 
         /// <summary>
-        /// Coleccion de campos de la tabla.
+        /// Collection of table fields.
         /// </summary>
         [ShowItem("Columns", "Column")]
         public Columns<Table> Columns
@@ -152,7 +152,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         #endregion
 
         /// <summary>
-        /// Clona el objeto Table en una nueva instancia.
+        /// Clones the Table object to a new instance.
         /// </summary>
         public override ISchemaBase Clone(ISchemaBase objectParent)
         {
@@ -187,23 +187,26 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         }
 
         /// <summary>
-        /// Devuelve el schema de la tabla en formato SQL.
+        /// Returns the schema of the table in SQL format.
         /// </summary>
         public string ToSql(Boolean showFK)
         {
             Database database = null;
             ISchemaBase current = this;
+
             while (database == null && current.Parent != null)
             {
                 database = current.Parent as Database;
                 current = current.Parent;
             }
+
             var isAzure10 = database.Info.Version == DatabaseInfo.VersionTypeEnum.SQLServerAzure10;
                 
             string sql = "";
             string sqlPK = "";
             string sqlUC = "";
             string sqlFK = "";
+
             if (columns.Count > 0)
             {
                 sql += "CREATE TABLE " + FullName + "\r\n(\r\n";
@@ -320,7 +323,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 */
 
         /// <summary>
-        /// Devuelve el schema de diferencias de la tabla en formato SQL.
+        /// Returns the schema of the table of differences in SQL format.
         /// </summary>
         public override SQLScriptList ToSqlDiff()
         {
@@ -382,7 +385,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 listDiff.AddRange(Constraints.ToSqlDiff());
                 listDiff.AddRange(Indexes.ToSqlDiff());
                 listDiff.AddRange(Options.ToSqlDiff());
-                //Como recrea la tabla, solo pone los nuevos triggers, por eso va ToSQL y no ToSQLDiff
+                // As recreates the table, just put the new triggers, why will not ToSQLDiff ToSQL.
                 listDiff.Add(Triggers.ToSql(), dependenciesCount, Enums.ScripActionType.AddTrigger);
                 listDiff.Add(CLRTriggers.ToSql(), dependenciesCount, Enums.ScripActionType.AddTrigger);
                 listDiff.AddRange(FullTextIndex.ToSqlDiff());

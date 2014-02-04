@@ -223,7 +223,8 @@ namespace DBDiff.Schema.Model
         }
 
         /// <summary>
-        /// Nombre de usuario del owner de la tabla.
+        /// Username of the owner of the table.
+        /// (Though really it's the schema name of the table).
         /// </summary>
         public string Owner
         {
@@ -232,7 +233,7 @@ namespace DBDiff.Schema.Model
         }
 
         /// <summary>
-        /// Nombre del objecto
+        /// Name of the object.
         /// </summary>
         public string Name
         {
