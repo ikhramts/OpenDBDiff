@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class ComparePartitionFunction:CompareBase<PartitionFunction>
     {
-        protected override void DoUpdate<Root>(SchemaList<PartitionFunction, Root> CamposOrigen, PartitionFunction node)
+        protected override void DoUpdate<Root>(SchemaList<PartitionFunction, Root> CamposOrigen, PartitionFunction node, DiffsConfig config = null)
         {
             if (!PartitionFunction.Compare(node, CamposOrigen[node.FullName]))
             {

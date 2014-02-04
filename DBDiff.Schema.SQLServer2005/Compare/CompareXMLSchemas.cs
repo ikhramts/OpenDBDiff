@@ -4,12 +4,13 @@ using System.Text;
 using System.Linq;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareXMLSchemas:CompareBase<XMLSchema>
     {
-        protected override void DoUpdate<Root>(SchemaList<XMLSchema, Root> CamposOrigen, XMLSchema node)
+        protected override void DoUpdate<Root>(SchemaList<XMLSchema, Root> CamposOrigen, XMLSchema node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

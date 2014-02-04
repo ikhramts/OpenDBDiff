@@ -68,6 +68,9 @@
     <Reference Include="Ascend.Windows.Forms, Version=1.0.0.6, Culture=neutral, PublicKeyToken=ecd86ece2d3eb46d">
       <HintPath>..\References\Ascend.Windows.Forms.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\References\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -114,6 +117,8 @@
     <Compile Include="Compare\CompareUsers.cs" />
     <Compile Include="Compare\CompareXMLSchemas.cs" />
     <Compile Include="Compare\CompareViews.cs" />
+    <Compile Include="Configs\Config.cs" />
+    <Compile Include="Configs\DiffsConfig.cs" />
     <Compile Include="Front\AddItem.cs">
       <SubType>Form</SubType>
     </Compile>

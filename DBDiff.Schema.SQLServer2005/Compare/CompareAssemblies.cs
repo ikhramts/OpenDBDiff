@@ -1,11 +1,12 @@
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareAssemblies : CompareBase<Assembly>
     {
-        protected override void DoUpdate<Root>(SchemaList<Assembly, Root> CamposOrigen, Assembly node)
+        protected override void DoUpdate<Root>(SchemaList<Assembly, Root> CamposOrigen, Assembly node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

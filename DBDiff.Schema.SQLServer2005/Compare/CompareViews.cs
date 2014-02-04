@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareViews : CompareBase<View>
     {
-        protected override void DoUpdate<Root>(SchemaList<View, Root> CamposOrigen, View node)
+        protected override void DoUpdate<Root>(SchemaList<View, Root> CamposOrigen, View node, DiffsConfig config = null)
         {
             View original = CamposOrigen[node.FullName];
             if (!node.Compare(original))

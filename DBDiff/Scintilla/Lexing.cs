@@ -473,8 +473,6 @@ namespace DBDiff.Scintilla
 
 	public class KeywordCollection : ScintillaHelperBase
 	{
-		private Dictionary<string, string[]> _lexerKeywordListMap;
-		private Dictionary<string, Dictionary<string, int>> _lexerStyleMap;
 		private Dictionary<string, Lexer> _lexerAliasMap;
 
 		internal KeywordCollection(Scintilla scintilla)
@@ -523,32 +521,6 @@ namespace DBDiff.Scintilla
 				_keywords[keywordSet] = value;
 				NativeScintilla.SetKeywords(keywordSet, value);
             }
-		}
-
-		public string this[string keywordSetName]
-		{
-			get
-			{
-				return this[getKeyowrdSetIndex(keywordSetName)];
-			}
-			set
-			{
-				this[getKeyowrdSetIndex(keywordSetName)] = value;
-			}
-		}
-
-		private int getKeyowrdSetIndex(string name)
-		{
-			string lexerName = Scintilla.Lexing.Lexer.ToString().ToLower();
-			if (_lexerKeywordListMap.ContainsKey(lexerName))
-				throw new ApplicationException("lexer " + lexerName + " does not support named keyword lists");
-
-			int index = ((IList)_lexerKeywordListMap[lexerName]).IndexOf(name);
-
-			if (index < 0)
-				throw new ArgumentException("Keyword Set name does not exist for lexer " + lexerName, "keywordSetName");
-
-			return index;
 		}
 	}
 }

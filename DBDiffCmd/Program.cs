@@ -1,11 +1,12 @@
-﻿namespace DBDiff.OCDB
-{
-    using System;
-    using System.Data.SqlClient;
-    using System.IO;
-    using DBDiff.Schema.SQLServer.Generates.Generates;
-    using DBDiff.Schema.SQLServer.Generates.Options;
+﻿using System;
+using System.Data.SqlClient;
+using System.IO;
+using DBDiff.Schema.SQLServer.Generates.Configs;
+using DBDiff.Schema.SQLServer.Generates.Generates;
+using DBDiff.Schema.SQLServer.Generates.Options;
 
+namespace DBDiff.OCDB
+{
     public class Program
     {
         private static SqlOption SqlFilter = new SqlOption();
@@ -91,7 +92,7 @@
                     System.Console.WriteLine("Reading second database...");
                     destination = sql.Process();
                     System.Console.WriteLine("Comparing databases schemas...");
-                    origin = Generate.Compare(origin, destination);
+                    origin = Generate.Compare(origin, destination, config.generate_diffs);
                     if (!arguments.OutputAll)
                     {
                         // temporary work-around: run twice just like GUI

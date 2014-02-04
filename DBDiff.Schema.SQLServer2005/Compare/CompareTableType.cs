@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareTableType : CompareBase<TableType>
     {
-        protected override void DoUpdate<Root>(SchemaList<TableType, Root> CamposOrigen, TableType node)
+        protected override void DoUpdate<Root>(SchemaList<TableType, Root> CamposOrigen, TableType node, DiffsConfig config = null)
         {
             if (node.Status != Enums.ObjectStatusType.DropStatus)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
@@ -18,7 +19,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
             CamposOrigen.Add(newNode);            
         }
 
-        protected override void DoUpdate<Root>(SchemaList<UserDataType, Root> CamposOrigen, UserDataType node)
+        protected override void DoUpdate<Root>(SchemaList<UserDataType, Root> CamposOrigen, UserDataType node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

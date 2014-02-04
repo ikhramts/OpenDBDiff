@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 using DBDiff.Schema.SQLServer.Generates.Generates;
 using DBDiff.Schema.SQLServer.Generates.Model;
 
@@ -9,7 +10,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal abstract class CompareBase<T> where T:ISchemaBase
     {
-        protected virtual void DoUpdate<Root>(SchemaList<T, Root> originFields, T node) where Root : ISchemaBase
+        protected virtual void DoUpdate<Root>(SchemaList<T, Root> originFields, T node, DiffsConfig config = null) where Root : ISchemaBase
         {
 
         }
@@ -27,7 +28,9 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
             node.Status = Enums.ObjectStatusType.DropStatus;
         }
 
-        public void GenerateDiferences<Root>(SchemaList<T, Root> originFields, SchemaList<T, Root> destinationFields) where Root : ISchemaBase
+        public void GenerateDiferences<Root>(SchemaList<T, Root> originFields, 
+                                             SchemaList<T, Root> destinationFields,
+                                             DiffsConfig config = null) where Root : ISchemaBase
         {
             int destinationIndex = 0;
             int originIndex = 0;
@@ -54,7 +57,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
                     else
                     {
                         Generate.RaiseOnCompareProgress("Updating {0}: [{1}]", node.ObjectType, node.Name);
-                        DoUpdate<Root>(originFields, node);
+                        DoUpdate<Root>(originFields, node, config);
                     }
 
                     destinationIndex++;

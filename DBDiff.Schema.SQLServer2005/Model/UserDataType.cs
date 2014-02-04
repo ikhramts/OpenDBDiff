@@ -331,7 +331,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 }
                 return list;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return null;
             }

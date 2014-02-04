@@ -5,6 +5,7 @@ using DBDiff.Schema.Errors;
 using DBDiff.Schema.Events;
 using DBDiff.Schema.Misc;
 using DBDiff.Schema.SQLServer.Generates.Compare;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 using DBDiff.Schema.SQLServer.Generates.Generates.Util;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.SQLServer.Generates.Options;
@@ -183,9 +184,14 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
             }
         }
         
-        public static Database Compare(Database databaseOriginalSchema, Database databaseCompareSchema)
+        public static Database Compare(Database databaseOriginalSchema, Database databaseCompareSchema, DiffsConfig config = null)
         {
-            Database merge = CompareDatabase.GenerateDiferences(databaseOriginalSchema, databaseCompareSchema);
+            if (config == null)
+            {
+                config = DiffsConfig.GetDefault();
+            }
+
+            Database merge = CompareDatabase.GenerateDiferences(databaseOriginalSchema, databaseCompareSchema, config);
             return merge;
         }
     }

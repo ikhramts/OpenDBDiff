@@ -1,11 +1,12 @@
 ﻿using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareFullText : CompareBase<FullText>
     {
-        protected override void DoUpdate<Root>(SchemaList<FullText, Root> CamposOrigen, FullText node)
+        protected override void DoUpdate<Root>(SchemaList<FullText, Root> CamposOrigen, FullText node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

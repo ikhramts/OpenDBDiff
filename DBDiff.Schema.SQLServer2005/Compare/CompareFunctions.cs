@@ -1,5 +1,6 @@
 ﻿using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
@@ -22,7 +23,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
             );            
         }
 
-        protected override void DoUpdate<Root>(SchemaList<Function, Root> CamposOrigen, Function node)
+        protected override void DoUpdate<Root>(SchemaList<Function, Root> CamposOrigen, Function node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

@@ -17,7 +17,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         {
         }
 
-        public IndexColumn Clone(ISchemaBase parent)
+        public new IndexColumn Clone(ISchemaBase parent)
         {
             IndexColumn column = new IndexColumn(parent);
             column.Id = this.Id;

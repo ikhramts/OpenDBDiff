@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareSynonyms:CompareBase<Synonym>
     {
-        protected override void DoUpdate<Root>(SchemaList<Synonym, Root> CamposOrigen, Synonym node)
+        protected override void DoUpdate<Root>(SchemaList<Synonym, Root> CamposOrigen, Synonym node, DiffsConfig config = null)
         {
             if (!Synonym.Compare(node, CamposOrigen[node.FullName]))
             {

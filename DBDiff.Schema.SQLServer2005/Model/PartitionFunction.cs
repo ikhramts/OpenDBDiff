@@ -28,7 +28,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             values = new List<string>();
         }
 
-        public PartitionFunction Clone(ISchemaBase parent)
+        public new PartitionFunction Clone(ISchemaBase parent)
         {
             PartitionFunction item = new PartitionFunction(parent);
             item.Id = this.Id;

@@ -1,11 +1,12 @@
 ﻿using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 using DBDiff.Schema.SQLServer.Generates.Model;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
     internal class CompareCLRFunction : CompareBase<CLRFunction>
     {
-        protected override void DoUpdate<Root>(SchemaList<CLRFunction, Root> CamposOrigen, CLRFunction node)
+        protected override void DoUpdate<Root>(SchemaList<CLRFunction, Root> CamposOrigen, CLRFunction node, DiffsConfig config = null)
         {
             if (!node.Compare(CamposOrigen[node.FullName]))
             {

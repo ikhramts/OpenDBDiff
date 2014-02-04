@@ -122,7 +122,7 @@
         private Ascend.Windows.Forms.GradientPanel gradientPanel1;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader Icon;
+        private new System.Windows.Forms.ColumnHeader Icon;
         private System.Windows.Forms.ColumnHeader Connection;
         private System.Windows.Forms.ImageList imageList1;
     }

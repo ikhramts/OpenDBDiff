@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using DBDiff.Schema.SQLServer.Generates.Model;
 using DBDiff.Schema.Model;
+using DBDiff.Schema.SQLServer.Generates.Configs;
 
 namespace DBDiff.Schema.SQLServer.Generates.Compare
 {
@@ -16,7 +17,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
             CamposOrigen.Add(newNode);
         }
 
-        protected override void DoUpdate<Root>(SchemaList<Index, Root> CamposOrigen, Index node)
+        protected override void DoUpdate<Root>(SchemaList<Index, Root> CamposOrigen, Index node, DiffsConfig config = null)
         {
             if (!Index.Compare(node, CamposOrigen[node.FullName]))
             {
