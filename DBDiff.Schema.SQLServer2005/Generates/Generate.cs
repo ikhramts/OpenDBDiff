@@ -81,7 +81,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
         /// <summary>
         /// Generates the schema of the selected database and returns a Database object.
         /// </summary>
-        public Database Process()
+        public Database Process(DiffsConfig config = null)
         {
             string error = "";
             var databaseSchema = new Database();
@@ -121,6 +121,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
             (new GenerateTriggers(this)).Fill(databaseSchema, connectionString, messages);
             (new GenerateTextObjects(this)).Fill(databaseSchema, connectionString);
             (new GenerateUsers(this)).Fill(databaseSchema, connectionString);
+            (new GenerateRowData(this)).Fill(databaseSchema, connectionString, messages, config);
 
             if (String.IsNullOrEmpty(error))
             {

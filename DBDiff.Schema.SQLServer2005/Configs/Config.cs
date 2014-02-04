@@ -21,7 +21,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Configs
         public string output_file { get; set; }
         public DiffsConfig generate_diffs { get; set; }
 
-        public static Config LoadYaml(string configPath)
+        public static Config LoadJson(string configPath)
         {
             //System.Diagnostics.Debugger.Break();
             var configText = System.IO.File.ReadAllText(configPath);

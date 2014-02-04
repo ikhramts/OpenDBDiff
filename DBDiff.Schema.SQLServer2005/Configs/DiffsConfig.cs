@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DBDiff.Schema.SQLServer.Generates.Configs
@@ -43,43 +45,80 @@ namespace DBDiff.Schema.SQLServer.Generates.Configs
         public bool indexes { get; set; }
 
         /// <summary>
-        /// Returns default config that sets everything to "true".
+        /// This field specifies in which tables we should diff
+        /// the data.  Each string in this list should contain a 
+        /// regex; if the table name matches this regex, DBDiff
+        /// will calculate the data diff in the table.
+        /// </summary>
+        public List<string> data_in_tables { get; private set; }
+
+        /// <summary>
+        /// Notwithstanding data_in_tables property, do not perform 
+        /// data diff on the table which has more than this number 
+        /// of rows.
+        /// </summary>
+        public int max_rows_to_diff { get; set; }
+
+        /// <summary>
+        /// The default config is to diff everything except for data,
+        /// and to set the maximum number of rows to do data diff on
+        /// to 1000.
+        /// </summary>
+        public DiffsConfig()
+        {
+            tables = true;
+            assemblies = true;
+            user_data_types = true;
+            xml_schemas = true;
+            schemas = true;
+            file_groups = true;
+            rules = true;
+            ddl_triggers = true;
+            synonyms = true;
+            users = true;
+            stored_procedures = true;
+            clr_stored_procedures = true;
+            clr_functions = true;
+            views = true;
+            functions = true;
+            roles = true;
+            partition_functions = true;
+            partition_schemes = true;
+            table_types = true;
+            full_text = true;
+
+            // Within tables:
+            columns = true;
+            constraints = true;
+            table_options = true;
+            triggers = true;
+            clr_triggers = true;
+            full_text_indexes = true;
+            indexes = true;
+
+            // Data diff settings.
+            data_in_tables = new List<string>();
+            max_rows_to_diff = 1000;
+        }
+
+        public bool ShouldDiffTableRows(string tableFullName)
+        {
+            foreach (var pattern in data_in_tables)
+            {
+                if (Regex.IsMatch(tableFullName, pattern))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// By default, diff everything except for data.
         /// </summary>
         /// <returns></returns>
         public static DiffsConfig GetDefault()
         {
-            return new DiffsConfig()
-            {
-                tables = true,
-                assemblies = true,
-                user_data_types = true,
-                xml_schemas = true,
-                schemas = true,
-                file_groups = true,
-                rules = true,
-                ddl_triggers = true,
-                synonyms = true,
-                users = true,
-                stored_procedures = true,
-                clr_stored_procedures = true,
-                clr_functions = true,
-                views = true,
-                functions = true,
-                roles = true,
-                partition_functions = true,
-                partition_schemes = true,
-                table_types = true,
-                full_text = true,
-
-                // Within tables:
-                columns = true,
-                constraints = true,
-                table_options = true,
-                triggers = true,
-                clr_triggers = true,
-                full_text_indexes = true,
-                indexes = true,
-            };
+            return new DiffsConfig();
         }
     }
 

@@ -57,7 +57,7 @@ namespace DBDiff.OCDB
             if (arguments.ConfigFile != null)
             {
                 System.Console.WriteLine("Reading config file...");
-                config = Config.LoadYaml(arguments.ConfigFile);
+                config = Config.LoadJson(arguments.ConfigFile);
 
                 if (String.IsNullOrEmpty(arguments.ConnectionString1))
                 {
@@ -86,11 +86,11 @@ namespace DBDiff.OCDB
                     sql.ConnectionString = arguments.ConnectionString1;
                     System.Console.WriteLine("Reading first database...");
                     sql.Options = SqlFilter;
-                    origin = sql.Process();
+                    origin = sql.Process(config.generate_diffs);
 
                     sql.ConnectionString = arguments.ConnectionString2;
                     System.Console.WriteLine("Reading second database...");
-                    destination = sql.Process();
+                    destination = sql.Process(config.generate_diffs);
                     System.Console.WriteLine("Comparing databases schemas...");
                     origin = Generate.Compare(origin, destination, config.generate_diffs);
                     if (!arguments.OutputAll)

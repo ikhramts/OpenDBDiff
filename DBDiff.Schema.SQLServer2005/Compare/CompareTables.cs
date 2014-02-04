@@ -47,6 +47,11 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
                     originTable.HasChangeTrackingTrackColumn = node.HasChangeTrackingTrackColumn;
                     originTable.Status += (int)Enums.ObjectStatusType.DisabledStatus;
                 }
+
+                if (config.ShouldDiffTableRows(originTable.FullName))
+                {
+                    (new CompareRowData()).GenerateDiferences<Table>(originTable.Rows, node.Rows);
+                }
             }
         }
 

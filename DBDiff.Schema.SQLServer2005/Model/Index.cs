@@ -137,6 +137,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             {
                 if (!origen.FileGroup.Equals(destino.FileGroup)) return false;
             }
+
             return true;
         }
 

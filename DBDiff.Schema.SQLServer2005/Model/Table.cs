@@ -24,6 +24,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             Indexes = new SchemaList<Index, Table>(this, ((Database) parent).AllObjects);
             Partitions = new SchemaList<TablePartition, Table>(this, ((Database) parent).AllObjects);
             FullTextIndex = new SchemaList<FullTextIndex, Table>(this);
+            Rows = new SchemaList<RowData, Table>(this);
         }
 
         public string CompressType { get; set; }
@@ -60,7 +61,9 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
         public SchemaList<TablePartition, Table> Partitions { get; set; }
 
-        public SchemaList<TableOption, Table> Options { get; set; }     
+        public SchemaList<TableOption, Table> Options { get; set; }
+
+        public SchemaList<RowData, Table> Rows { get; set; }
 
         /// <summary>
         /// Indicates if the table has a column that is Identity.

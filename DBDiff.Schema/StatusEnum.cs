@@ -168,7 +168,8 @@ namespace DBDiff.Schema
             PartitionScheme = 33,
             [Description("Table Type")]
             TableType = 34,
-            FullTextIndex = 35
+            FullTextIndex = 35,
+            RowData = 36,
         }
     }
 }
