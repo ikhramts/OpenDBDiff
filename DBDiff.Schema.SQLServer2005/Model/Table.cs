@@ -263,6 +263,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 sql += FullTextIndex.ToSql();
                 sql += Options.ToSql();
                 sql += Triggers.ToSql();
+                sql += Rows.ToSql();
             }
             return sql;
         }
@@ -359,7 +360,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
             if (HasState(Enums.ObjectStatusType.RebuildDependenciesStatus))
             {
-                GenerateDependencis();
+                GenerateDependencies();
                 listDiff.AddRange(ToSQLDropDependencis());
                 listDiff.AddRange(columns.ToSqlDiff());
                 listDiff.AddRange(ToSQLCreateDependencis());
@@ -369,6 +370,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 listDiff.AddRange(Triggers.ToSqlDiff());
                 listDiff.AddRange(CLRTriggers.ToSqlDiff());
                 listDiff.AddRange(FullTextIndex.ToSqlDiff());
+                listDiff.AddRange(Rows.ToSqlDiff());
             }
             if (HasState(Enums.ObjectStatusType.AlterStatus))
             {
@@ -379,10 +381,11 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 listDiff.AddRange(Triggers.ToSqlDiff());
                 listDiff.AddRange(CLRTriggers.ToSqlDiff());
                 listDiff.AddRange(FullTextIndex.ToSqlDiff());
+                listDiff.AddRange(Rows.ToSqlDiff());
             }
             if (HasState(Enums.ObjectStatusType.RebuildStatus))
             {
-                GenerateDependencis();
+                GenerateDependencies();
                 listDiff.AddRange(ToSQLRebuild());
                 listDiff.AddRange(columns.ToSqlDiff());
                 listDiff.AddRange(Constraints.ToSqlDiff());
@@ -392,6 +395,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 listDiff.Add(Triggers.ToSql(), dependenciesCount, Enums.ScripActionType.AddTrigger);
                 listDiff.Add(CLRTriggers.ToSql(), dependenciesCount, Enums.ScripActionType.AddTrigger);
                 listDiff.AddRange(FullTextIndex.ToSqlDiff());
+                listDiff.AddRange(Rows.ToSqlDiff());
             }
             if (HasState(Enums.ObjectStatusType.DisabledStatus))
             {
@@ -521,13 +525,17 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 if (!String.IsNullOrEmpty(CompressType))
                     sql += "WITH (DATA_COMPRESSION = " + CompressType + ")\r\n";
             }
+
             sql += ")";
+
             if (!String.IsNullOrEmpty(FileGroup)) sql += " ON [" + FileGroup + "]";
+            
             if (!String.IsNullOrEmpty(FileGroupText))
             {
                 if (HasBlobColumn)
                     sql += " TEXTIMAGE_ON [" + FileGroupText + "]";
             }
+            
             if ((!String.IsNullOrEmpty(FileGroupStream)) && (HasFileStream))
                 sql += " FILESTREAM_ON [" + FileGroupStream + "]";
 
@@ -536,72 +544,76 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             return sql;
         }
 
-        private void GenerateDependencis()
+        private void GenerateDependencies()
         {
-            List<ISchemaBase> myDependencis;
-            /*Si el estado es AlterRebuildDependeciesStatus, busca las dependencias solamente en las columnas que fueron modificadas*/
+            List<ISchemaBase> myDependencies;
+            // If the status is AlterRebuildDependeciesStatus seeks dependencies 
+            // only on the columns that were modified.
             if (Status == Enums.ObjectStatusType.RebuildDependenciesStatus)
             {
-                myDependencis = new List<ISchemaBase>();
+                myDependencies = new List<ISchemaBase>();
                 for (int ic = 0; ic < Columns.Count; ic++)
                 {
                     if ((Columns[ic].Status == Enums.ObjectStatusType.RebuildDependenciesStatus) ||
                         (Columns[ic].Status == Enums.ObjectStatusType.AlterStatus))
-                        myDependencis.AddRange(((Database) Parent).Dependencies.Find(Id, 0, Columns[ic].DataUserTypeId));
+                        myDependencies.AddRange(((Database) Parent).Dependencies.Find(Id, 0, Columns[ic].DataUserTypeId));
                 }
-                /*Si no encuentra ninguna, toma todas las de la tabla*/
-                if (myDependencis.Count == 0)
-                    myDependencis.AddRange(((Database) Parent).Dependencies.Find(Id));
+
+                // If none are found, making all of the table.
+                if (myDependencies.Count == 0)
+                    myDependencies.AddRange(((Database) Parent).Dependencies.Find(Id));
             }
             else
-                myDependencis = ((Database) Parent).Dependencies.Find(Id);
+                myDependencies = ((Database) Parent).Dependencies.Find(Id);
 
             dependencis = new List<ISchemaBase>();
-            for (int j = 0; j < myDependencis.Count; j++)
+            for (int j = 0; j < myDependencies.Count; j++)
             {
                 ISchemaBase item = null;
-                if (myDependencis[j].ObjectType == Enums.ObjectType.Index)
-                    item = Indexes[myDependencis[j].FullName];
-                if (myDependencis[j].ObjectType == Enums.ObjectType.Constraint)
+                if (myDependencies[j].ObjectType == Enums.ObjectType.Index)
+                    item = Indexes[myDependencies[j].FullName];
+                if (myDependencies[j].ObjectType == Enums.ObjectType.Constraint)
                     item =
-                        ((Database) Parent).Tables[myDependencis[j].Parent.FullName].Constraints[
-                            myDependencis[j].FullName];
-                if (myDependencis[j].ObjectType == Enums.ObjectType.Default)
-                    item = columns[myDependencis[j].FullName].DefaultConstraint;
-                if (myDependencis[j].ObjectType == Enums.ObjectType.View)
-                    item = ((Database) Parent).Views[myDependencis[j].FullName];
-                if (myDependencis[j].ObjectType == Enums.ObjectType.Function)
-                    item = ((Database) Parent).Functions[myDependencis[j].FullName];
+                        ((Database) Parent).Tables[myDependencies[j].Parent.FullName].Constraints[
+                            myDependencies[j].FullName];
+                if (myDependencies[j].ObjectType == Enums.ObjectType.Default)
+                    item = columns[myDependencies[j].FullName].DefaultConstraint;
+                if (myDependencies[j].ObjectType == Enums.ObjectType.View)
+                    item = ((Database) Parent).Views[myDependencies[j].FullName];
+                if (myDependencies[j].ObjectType == Enums.ObjectType.Function)
+                    item = ((Database) Parent).Functions[myDependencies[j].FullName];
                 if (item != null)
                     dependencis.Add(item);
             }
         }
 
         /// <summary>
-        /// Genera una lista de FK que deben ser eliminadas previamente a la eliminacion de la tablas.
-        /// Esto pasa porque para poder eliminar una tabla, hay que eliminar antes todas las constraints asociadas.
+        /// Generates a list of FK that must be removed prior to removal of the tables.
+        /// This happens because in order to delete a table, you have to delete before 
+        /// all the associated constraints.
         /// </summary>
         private SQLScriptList ToSQLDropFKBelow()
         {
             var listDiff = new SQLScriptList();
             Constraints.ForEach(constraint =>
-                                    {
-                                        if ((constraint.Type == Constraint.ConstraintType.ForeignKey) &&
-                                            (((Table) constraint.Parent).DependenciesCount <= DependenciesCount))
-                                        {
-                                            /*Si la FK pertenece a la misma tabla, no se debe explicitar el DROP CONSTRAINT antes de hacer el DROP TABLE*/
-                                            if (constraint.Parent.Id != constraint.RelationalTableId)
-                                            {
-                                                listDiff.Add(constraint.Drop());
-                                            }
-                                        }
-                                    });
+                {
+                    if ((constraint.Type == Constraint.ConstraintType.ForeignKey) &&
+                        (((Table) constraint.Parent).DependenciesCount <= DependenciesCount))
+                    {
+                        // If the FK belongs to the same table, do not explain the DROP 
+                        // CONSTRAINT prior to the DROP TABLE.
+                        if (constraint.Parent.Id != constraint.RelationalTableId)
+                        {
+                            listDiff.Add(constraint.Drop());
+                        }
+                    }
+                });
             return listDiff;
         }
 
         /// <summary>
-        /// Genera una lista de script de DROPS de todas los constraints dependientes de la tabla.
-        /// Se usa cuando se quiere reconstruir una tabla y todos sus objectos dependientes.
+        /// Generates a list of all script DROPS dependent constraints of the table.
+        /// It is used when you want to rebuild a table and all its dependent objects.
         /// </summary>
         private SQLScriptList ToSQLDropDependencis()
         {
@@ -627,7 +639,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                         listDiff.Add(dependencis[index].Drop());
                 }
             }
-            //Se buscan todas las columns constraints.
+            // All columns are searched constraints.
             columns.ForEach(column =>
                                 {
                                     if (column.DefaultConstraint != null)
@@ -646,7 +658,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         {
             bool addDependencie = true;
             var listDiff = new SQLScriptList();
-            //Las constraints de deben recorrer en el orden inverso.
+            // The constraints of must travel in the reverse order.
             for (int index = dependencis.Count - 1; index >= 0; index--)
             {
                 if ((dependencis[index].Status == Enums.ObjectStatusType.OriginalStatus) &&
@@ -663,7 +675,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                         listDiff.Add(dependencis[index].Create());
                 }
             }
-            //Se buscan todas las columns constraints.
+            // All columns are searched constraints.
             for (int index = columns.Count - 1; index >= 0; index--)
             {
                 if (columns[index].DefaultConstraint != null)
@@ -677,7 +689,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         }
 
         /// <summary>
-        /// Compara dos tablas y devuelve true si son iguales, caso contrario, devuelve false.
+        /// Compare two tables and returns true if they are equal, otherwise returns false.
         /// </summary>
         public static Boolean CompareFileGroup(Table origen, Table destino)
         {
@@ -690,7 +702,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         }
 
         /// <summary>
-        /// Compara dos tablas y devuelve true si son iguales, caso contrario, devuelve false.
+        /// Compare two tables and returns true if they are equal, otherwise returns false.
         /// </summary>
         public static Boolean CompareFileGroupText(Table origen, Table destino)
         {

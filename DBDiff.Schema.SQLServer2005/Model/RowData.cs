@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using DBDiff.Schema.Model;
@@ -9,14 +8,14 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 {
     public class RowData : SQLServerSchemaBase
     {
-        private Dictionary<string, object> columnValues;
-        private string fullName;
+        private readonly Dictionary<string, object> _columnValues;
+        private readonly string _fullName;
 
 
         public RowData(ISchemaBase parent, Dictionary<string, object> columnValues)
             : base(parent, Enums.ObjectType.RowData)
         {
-            this.columnValues = columnValues;
+            _columnValues = columnValues;
 
             var fullNameBuilder = new StringBuilder();
             fullNameBuilder.Append("Row: ");
@@ -25,18 +24,18 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             {
                 fullNameBuilder.Append(keyValue.Key)
                                .Append('=')
-                               .Append(keyValue.Value.ToString())
+                               .Append(keyValue.Value)
                                .Append('|');
             }
 
-            fullName = fullNameBuilder.ToString();
+            _fullName = fullNameBuilder.ToString();
         }
 
         public override int GetHashCode()
         {
             int hash = 17;
 
-            foreach (var keyValue in columnValues)
+            foreach (var keyValue in _columnValues)
             {
                 hash += 23 * keyValue.Key.GetHashCode();
                 hash += 23 * keyValue.Value.GetHashCode();
@@ -58,14 +57,14 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
 
             var other = (RowData)obj;
-            return DictionariesEqual(this.columnValues, other.columnValues);
+            return DictionariesEqual(_columnValues, other._columnValues);
         }
 
         public override string FullName
         {
             get
             {
-                return fullName;
+                return _fullName;
             }
         }
 
@@ -76,7 +75,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             sql.AppendFormat("INSERT INTO {0} (", Parent.FullName);
             var first = true;
 
-            foreach (var keyValue in columnValues)
+            foreach (var keyValue in _columnValues)
             {
                 if (first)
                     first = false;
@@ -90,7 +89,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             sql.Append(")\n    VALUES (");
 
             first = true;
-            foreach (var keyValue in columnValues)
+            foreach (var keyValue in _columnValues)
             {
                 if (first)
                     first = false;
@@ -117,7 +116,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             sql.AppendFormat("DELETE TOP 1 FROM {0} WHERE", Parent.FullName);
             var first = true;
 
-            foreach (var keyValue in columnValues)
+            foreach (var keyValue in _columnValues)
             {
                 sql.Append("\n    ");
 
@@ -144,6 +143,41 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             sql.Append("\nGO\n");
 
             return sql.ToString();
+        }
+
+        public override SQLScript Create()
+        {
+            return new SQLScript(this.ToSql(), 0, Enums.ScripActionType.InsertRow);
+        }
+
+        public override SQLScript Drop()
+        {
+            return new SQLScript(this.ToSqlDrop(), 0, Enums.ScripActionType.DeleteRow);
+        }
+
+        public override SQLScriptList ToSqlDiff()
+        {
+            var list = new SQLScriptList();
+
+            if (this.Status != Enums.ObjectStatusType.OriginalStatus)
+                RootParent.ActionMessage[Parent.FullName].Add(this);
+
+            if (this.HasState(Enums.ObjectStatusType.DropStatus))
+            {
+                if (this.Parent.Status != Enums.ObjectStatusType.RebuildStatus)
+                    list.Add(Drop());
+            }
+
+            if (this.HasState(Enums.ObjectStatusType.CreateStatus))
+                list.Add(Create());
+
+            if (this.HasState(Enums.ObjectStatusType.AlterStatus))
+            {
+                list.Add(Drop());
+                list.Add(Create());
+            }
+
+            return list;
         }
 
         private static bool DictionariesEqual<TKey, TValue>(
@@ -178,7 +212,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
             else if (value is string)
             {
-                return String.Format("'{0}'", (string)value);
+                return String.Format("'{0}'", value);
             }
             else
             {

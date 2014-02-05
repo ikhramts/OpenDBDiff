@@ -119,7 +119,10 @@ namespace DBDiff.Schema
             DropFile = 75,
             DropFileGroup = 76,
             AddExtendedProperty = 77,
-            DropExtendedProperty = 78
+            DropExtendedProperty = 78,
+
+            InsertRow,
+            DeleteRow
         }
 
         public enum ObjectType

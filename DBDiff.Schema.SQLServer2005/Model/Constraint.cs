@@ -20,14 +20,12 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
         private string definition;
         private ConstraintType type;
-        private ConstraintColumns columns;
         private string relationalTable;
         private int relationalTableId;
         private Boolean withNoCheck;
         private Boolean notForReplication;
         private int onUpdateCascade;
         private int onDeleteCascade;
-        private Index index;
         private Boolean isDisabled;
 
         public Constraint(ISchemaBase parent)
@@ -42,7 +40,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         /// </summary>
         public override ISchemaBase Clone(ISchemaBase parent)
         {
-            Constraint col = new Constraint(parent);
+            var col = new Constraint(parent);
             col.Id = this.Id;
             col.Name = this.Name;
             col.NotForReplication = this.NotForReplication;
@@ -64,20 +62,12 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         /// <summary>
         /// Informacion sobre le indice asociado al Constraint.
         /// </summary>
-        public Index Index
-        {
-            get { return index; }
-            set { index = value; }
-        }
+        public Index Index { get; set; }
 
         /// <summary>
         /// Coleccion de columnas de la constraint.
         /// </summary>
-        public ConstraintColumns Columns
-        {
-            get { return columns; }
-            set { columns = value; }
-        }
+        public ConstraintColumns Columns { get; set; }
 
         /// <summary>
         /// Indica si la constraint tiene asociada un indice Clustered.
@@ -204,7 +194,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             return true;
         }
 
-        private string ToSQLGeneric(ConstraintType consType)
+        private string ToSqlGeneric(ConstraintType consType)
         {
             Database database = null;
             ISchemaBase current = this;
@@ -215,7 +205,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
             var isAzure10 = database.Info.Version == DatabaseInfo.VersionTypeEnum.SQLServerAzure10;
             string typeConstraint = "";
-            StringBuilder sql = new StringBuilder();
+            var sql = new StringBuilder();
             if (Index.Type == Index.IndexTypeEnum.Clustered) typeConstraint = "CLUSTERED";
             if (Index.Type == Index.IndexTypeEnum.Nonclustered) typeConstraint = "NONCLUSTERED";
             if (Index.Type == Index.IndexTypeEnum.XML) typeConstraint = "XML";
@@ -272,12 +262,12 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         {
             if (this.Type == ConstraintType.PrimaryKey)
             {
-                return ToSQLGeneric(ConstraintType.PrimaryKey);
+                return ToSqlGeneric(ConstraintType.PrimaryKey);
             }
             if (this.Type == Constraint.ConstraintType.ForeignKey)
             {
-                StringBuilder sql = new StringBuilder();
-                StringBuilder sqlReference = new StringBuilder();
+                var sql = new StringBuilder();
+                var sqlReference = new StringBuilder();
                 int indexc = 0;
 
                 this.Columns.Sort();
@@ -309,7 +299,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
             if (this.Type == Constraint.ConstraintType.Unique)
             {
-                return ToSQLGeneric(ConstraintType.Unique);
+                return ToSqlGeneric(ConstraintType.Unique);
             }
             if (this.Type == Constraint.ConstraintType.Check)
             {
@@ -334,7 +324,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
         public override SQLScript Create()
         {
-            Enums.ScripActionType action = Enums.ScripActionType.AddConstraint;
+            var action = Enums.ScripActionType.AddConstraint;
             if (this.Type == Constraint.ConstraintType.ForeignKey)
                 action = Enums.ScripActionType.AddConstraintFK;
             if (this.Type == Constraint.ConstraintType.PrimaryKey)
@@ -350,7 +340,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
         public override SQLScript Drop()
         {
-            Enums.ScripActionType action = Enums.ScripActionType.DropConstraint;
+            var action = Enums.ScripActionType.DropConstraint;
             if (this.Type == Constraint.ConstraintType.ForeignKey)
                 action = Enums.ScripActionType.DropConstraintFK;
             if (this.Type == Constraint.ConstraintType.PrimaryKey)
@@ -364,17 +354,17 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 return null;
         }
 
-        public string ToSqlDrop(string FileGroupName)
+        public string ToSqlDrop(string fileGroupName)
         {
             string sql = "ALTER TABLE " + ((Table)Parent).FullName + " DROP CONSTRAINT [" + Name + "]";
-            if (!String.IsNullOrEmpty(FileGroupName)) sql += " WITH (MOVE TO [" + FileGroupName + "])";
+            if (!String.IsNullOrEmpty(fileGroupName)) sql += " WITH (MOVE TO [" + fileGroupName + "])";
             sql += "\r\nGO\r\n";
             return sql;
         }
 
-        public string ToSQLEnabledDisabled()
+        public string ToSqlEnabledDisabled()
         {
-            StringBuilder sql = new StringBuilder();
+            var sql = new StringBuilder();
             if (this.IsDisabled)
                 return "ALTER TABLE " + Parent.FullName + " NOCHECK CONSTRAINT [" + Name + "]\r\nGO\r\n";
             else
@@ -385,7 +375,8 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 
         public override SQLScriptList ToSqlDiff()
         {
-            SQLScriptList list = new SQLScriptList();
+            var list = new SQLScriptList();
+
             if (this.Status != Enums.ObjectStatusType.OriginalStatus)
                 RootParent.ActionMessage[Parent.FullName].Add(this);
 
@@ -394,8 +385,10 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
                 if (this.Parent.Status != Enums.ObjectStatusType.RebuildStatus)
                     list.Add(Drop());
             }
+
             if (this.HasState(Enums.ObjectStatusType.CreateStatus))
                 list.Add(Create());
+
             if (this.HasState(Enums.ObjectStatusType.AlterStatus))
             {
                 list.Add(Drop());
@@ -403,7 +396,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
             if (this.HasState(Enums.ObjectStatusType.DisabledStatus))
             {
-                list.Add(this.ToSQLEnabledDisabled(), ((Table)Parent).DependenciesCount, Enums.ScripActionType.AlterConstraint);
+                list.Add(this.ToSqlEnabledDisabled(), ((Table)Parent).DependenciesCount, Enums.ScripActionType.AlterConstraint);
             }
             /*if (this.Status == StatusEnum.ObjectStatusType.ChangeFileGroup)
             {
