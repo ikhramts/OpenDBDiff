@@ -110,7 +110,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Generates
                                         if (type.Equals("V"))
                                             ((View)parent).CLRTriggers.Add(item);
                                         else
-                                            ((Table)parent).CLRTriggers.Add(item);
+                                            ((Table)parent).ClrTriggers.Add(item);
                                         /*if (!database.Options.Ignore.FilterIgnoreNotForReplication)
                                             trigger.NotForReplication = (bool)reader["is_not_for_replication"];*/
                                     }

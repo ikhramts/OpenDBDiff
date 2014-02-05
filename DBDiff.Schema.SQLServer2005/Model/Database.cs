@@ -221,7 +221,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
 */
 
 ",
-                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version,
                 Environment.UserDomainName, 
                 Environment.UserName,
                 DateTime.Now.ToShortDateString(),
@@ -290,70 +290,70 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
             }
         }
 
-        public ISchemaBase Find(String _FullName)
+        public ISchemaBase Find(string fullName)
         {
             try
             {
-                Enums.ObjectType type = AllObjects.GetType(_FullName);
+                Enums.ObjectType type = AllObjects.GetType(fullName);
                 string parentName = "";
 
                 switch (type)
                 {
                     case Enums.ObjectType.Table:
-                        return Tables[_FullName];
+                        return Tables[fullName];
                     case Enums.ObjectType.StoreProcedure:
-                        return Procedures[_FullName];
+                        return Procedures[fullName];
                     case Enums.ObjectType.Function:
-                        return Functions[_FullName];
+                        return Functions[fullName];
                     case Enums.ObjectType.View:
-                        return Views[_FullName];
+                        return Views[fullName];
                     case Enums.ObjectType.Assembly:
-                        return Assemblies[_FullName];
+                        return Assemblies[fullName];
                     case Enums.ObjectType.UserDataType:
-                        return UserTypes[_FullName];
+                        return UserTypes[fullName];
                     case Enums.ObjectType.TableType:
-                        return TablesTypes[_FullName];
+                        return TablesTypes[fullName];
                     case Enums.ObjectType.XMLSchema:
-                        return XmlSchemas[_FullName];
+                        return XmlSchemas[fullName];
                     case Enums.ObjectType.CLRStoreProcedure:
-                        return CLRProcedures[_FullName];
+                        return CLRProcedures[fullName];
                     case Enums.ObjectType.CLRFunction:
-                        return CLRFunctions[_FullName];
+                        return CLRFunctions[fullName];
                     case Enums.ObjectType.Synonym:
-                        return Synonyms[_FullName];
+                        return Synonyms[fullName];
                     case Enums.ObjectType.FullText:
-                        return FullText[_FullName];
+                        return FullText[fullName];
                     case Enums.ObjectType.Rule:
-                        return Rules[_FullName];
+                        return Rules[fullName];
                     case Enums.ObjectType.PartitionFunction:
-                        return PartitionFunctions[_FullName];
+                        return PartitionFunctions[fullName];
                     case Enums.ObjectType.PartitionScheme:
-                        return PartitionSchemes[_FullName];
+                        return PartitionSchemes[fullName];
                     case Enums.ObjectType.Role:
-                        return Roles[_FullName];
+                        return Roles[fullName];
                     case Enums.ObjectType.Schema:
-                        return Schemas[_FullName];
+                        return Schemas[fullName];
                     case Enums.ObjectType.Constraint:
-                        parentName = AllObjects.GetParentName(_FullName);
-                        return Tables[parentName].Constraints[_FullName];
+                        parentName = AllObjects.GetParentName(fullName);
+                        return Tables[parentName].Constraints[fullName];
                     case Enums.ObjectType.Index:
-                        parentName = AllObjects.GetParentName(_FullName);
+                        parentName = AllObjects.GetParentName(fullName);
                         type = AllObjects.GetType(parentName);
                         if (type == Enums.ObjectType.Table)
-                            return Tables[parentName].Indexes[_FullName];
-                        return Views[parentName].Indexes[_FullName];
+                            return Tables[parentName].Indexes[fullName];
+                        return Views[parentName].Indexes[fullName];
                     case Enums.ObjectType.Trigger:
-                        parentName = AllObjects.GetParentName(_FullName);
+                        parentName = AllObjects.GetParentName(fullName);
                         type = AllObjects.GetType(parentName);
                         if (type == Enums.ObjectType.Table)
-                            return Tables[parentName].Triggers[_FullName];
-                        return Views[parentName].Triggers[_FullName];
+                            return Tables[parentName].Triggers[fullName];
+                        return Views[parentName].Triggers[fullName];
                     case Enums.ObjectType.CLRTrigger:
-                        parentName = AllObjects.GetParentName(_FullName);
+                        parentName = AllObjects.GetParentName(fullName);
                         type = AllObjects.GetType(parentName);
                         if (type == Enums.ObjectType.Table)
-                            return Tables[parentName].CLRTriggers[_FullName];
-                        return Views[parentName].CLRTriggers[_FullName];
+                            return Tables[parentName].ClrTriggers[fullName];
+                        return Views[parentName].CLRTriggers[fullName];
                 }
                 return null;
             }

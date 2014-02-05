@@ -22,7 +22,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Compare
                 if (config.indexes) (new CompareIndexes()).GenerateDiferences<Table>(originTable.Indexes, node.Indexes);
                 if (config.table_options) (new CompareTablesOptions()).GenerateDiferences<Table>(originTable.Options, node.Options);
                 if (config.triggers) (new CompareTriggers()).GenerateDiferences<Table>(originTable.Triggers, node.Triggers);
-                if (config.clr_triggers) (new CompareCLRTriggers()).GenerateDiferences<Table>(originTable.CLRTriggers, node.CLRTriggers);
+                if (config.clr_triggers) (new CompareCLRTriggers()).GenerateDiferences<Table>(originTable.ClrTriggers, node.ClrTriggers);
                 if (config.full_text_indexes) (new CompareFullTextIndex()).GenerateDiferences<Table>(originTable.FullTextIndex, node.FullTextIndex);
                 
                 if (config.file_groups
