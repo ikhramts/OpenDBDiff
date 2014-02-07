@@ -113,7 +113,7 @@ namespace DBDiff.Schema.SQLServer.Generates.Model
         {
             var sql = new StringBuilder();
 
-            sql.AppendFormat("DELETE TOP 1 FROM {0} WHERE", Parent.FullName);
+            sql.AppendFormat("DELETE TOP (1) FROM {0} WHERE", Parent.FullName);
             var first = true;
 
             foreach (var keyValue in _columnValues)
